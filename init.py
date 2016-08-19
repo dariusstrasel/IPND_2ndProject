@@ -69,7 +69,6 @@ def word_in_pos(word, parts_of_speech):
 
 
 def play_game(ml_string, parts_of_speech):
-    output = 0
     replaced = []
     stringList = ml_string.split()
     for i in stringList:
