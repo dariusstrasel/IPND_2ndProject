@@ -20,17 +20,13 @@
 #Todo: function which controls flow of game? 1.Introduction 2. Question set 3.Score/conclusion stub
 #Todo: score stub
 #-----> leaderboard?
-#Todo: question/answer stub
+#Todo: display question/answer stub
 #Todo: difficulty (with score modifier, and "try" count stub
 #Todo: lose/win stub
-#Todo: generate questions/answers lists
-#Todo:
+#Todo: modify question iterator to select a question index from bank instead of single variable
+#Todo: Add userinput prompt
+#Todo: Determine how to replace blank with the correct answer and not "corgi"
 #=======================================================================================================================
-
-sample = '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
-adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
-don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
-tuple, and ___4___ or can be more complicated such as objects and lambda functions.'''
 
 # The answer for ___1___ is 'function'. Can you figure out the others?
 
@@ -56,28 +52,68 @@ tuple, and ___4___ or can be more complicated such as objects and lambda functio
 # program cannot replace those words with user input.
 #=======================================================================================================================
 
-parts_of_speech = ["PLACE", "PERSON", "PLURALNOUN", "NOUN"]
+#global questionIndex
+questionIndex = 0
+uniqueIDList = []
+#questionGroup = [qsID[[question][answer]]]
 
-test_string = """This is PLACE, no NOUN named PERSON, We have so many PLURALNOUN around here."""
+#Key to creating a list with multiple questions is emulating sql clause aka select, update, but represented as
+#functions.
+questionBank = []
+def assignUniqueID():
+    global questionIndex
+    global uniqueIDList
+    if questionIndex not in uniqueIDList:
+        uniqueIDList.append(questionIndex)
+        return questionIndex
+    questionIndex = questionIndex + 1
+    uniqueIDList.append(questionIndex)
+    return questionIndex
 
 
-def word_in_pos(word, parts_of_speech):
-    for pos in parts_of_speech:
-        if pos in word:
-            return pos
+def createQuestion(questionAnswer, blankSet, questionString):
+    print("current question index: " + str(questionIndex))
+    qsGroup = [assignUniqueID()]
+    qsGroup.append([questionAnswer, blankSet, questionString])
+    questionBank.append(qsGroup)
+    print(questionBank)
+    print ("new question index: " + str(questionIndex))
+
+
+createQuestion(["banana"], ["___1___"], '''A ___1___ is yellow.''')
+createQuestion(["function", "variables", "values", "lists"], ["___1___", "___2___", "___3___", "___4___"],  '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
+adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
+don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
+tuple, and ___4___ or can be more complicated such as objects and lambda functions.''')
+
+blankSet = ["___1___", "___2___", "___3___", "___4___"]
+questionAnswer = ["function", "variables", "values", "lists"]
+questionString = '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
+adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
+don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
+tuple, and ___4___ or can be more complicated such as objects and lambda functions.'''
+
+print("questionBank[0] = " + str(questionBank[0]))
+print("questionBank[1] = " + str(questionBank[1]))
+print("questionBank[1][1][2] = " + str(questionBank[1][1][2]))
+
+def text_in_qs(word, blankSet):
+    for tiq in blankSet:
+        if tiq in word:
+            return tiq
     return None
 
 
-def play_game(ml_string, parts_of_speech):
+def play_game(inputString, blankSet):
     replaced = []
-    stringList = ml_string.split()
-    for i in stringList:
-        if word_in_pos(i, parts_of_speech) <> None:
-            replaced.append(i.replace(word_in_pos(i, parts_of_speech), "corgi"))
-            # replaced.append(i.replace(i, "corgi"))
+    stringaslist = inputString.split()
+    for text in stringaslist:
+        if text_in_qs(text, blankSet) != None:
+            replaced.append(text.replace(text_in_qs(text, blankSet), "corgi"))
         else:
-            replaced.append(i)
+            replaced.append(text)
     return " ".join(replaced)
 
+print (play_game(questionString, blankSet))
 
-print play_game(test_string, parts_of_speech)
+
