@@ -1,0 +1,76 @@
+Project Submission
+
+In this stage, you will use the Python programming language to build your own quiz. You will use a fill-in-the blank style to create a quiz that can even be used as a study tool to help you remember important vocabulary.
+
+1 - Game Review
+In this portion of the review, your reviewer will be checking to make sure the game works the way it's supposed to. See the rubric below for exact specs.
+
+2 - Code Review
+Your reviewer will also look at the Python code you've written and provide feedback on:
+
+Use of Variables: Your code should take advantage of variables and variable names should reflect the values they store.
+Functions: Your code should use functions appropriately to avoid repetition. Function parameters should have logical names and should all be used in the body of the function.
+Appropriate use of Data: Data types (strings vs lists for example) should be used appropriately.
+Appropriate use of other coding techniques: Your code should use statements like if, then, else, while, etc... appropriately.
+Each function includes a comment: Comments explain function behavior, inputs, and outputs (if applicable.)
+The rubric that will be used is here.
+
+PROJECT SPECIFICATION
+Code Your Own Quiz
+
+Game Review
+
+CRITERIA
+MEETS SPECIFICATIONS
+Game Basics
+
+Game has 3 or more levels and each level contains 4 or more blanks to fill in
+
+Beginning the Game
+
+Immediately after running the program, user is prompted to select a difficulty level from easy / medium / hard
+
+Once a level is selected, game displays a fill-in-the-blank and a prompt to fill in the first blank.
+
+Game Play
+
+When player guesses correctly, new prompt shows with correct answer in the previous blank and a new prompt for the next blank
+
+When player guesses incorrectly, they are prompted to try again
+
+Code Review
+
+CRITERIA
+MEETS SPECIFICATIONS
+Use of Variables
+
+Code uses variables to avoid magic numbers
+
+Each variable name reflects the purpose of the value stored in it
+
+Once initiated, the purpose of each variable is maintained throughout the program
+
+No variables override Python built-in values (for example, def)
+
+Use of Functions
+
+Functions are used as tools to automate tasks which are likely to be repeated
+
+Functions produce the appropriate output (typically with a return statement) from the appropriate input (function parameters)
+
+No functions are longer than 18 lines of code (does not include blank lines, comments, or function and variable definitions)
+
+Appropriate Use of Data
+
+The appropriate data types are used consistently (strings for text, lists for ordered data, nested lists as appropriate)
+
+Appropriate Use of Coding Techniques
+
+Student demonstrates coding techniques like branching and loops appropriately (i.e. to loop through a list, for element in list:; or to test whether something is in a list, if name in list_names:)
+
+Comments / Documentation
+
+Each function includes a comment which explains the intended behavior, inputs, and outputs (if applicable)
+
+Suggestions to Make Your Project Stand Out!
+Let the user decide how many wrong guesses they can make before they lose
