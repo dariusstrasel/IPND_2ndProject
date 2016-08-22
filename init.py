@@ -70,6 +70,29 @@ def assignUniqueID():
     uniqueIDList.append(questionIndex)
     return questionIndex
 
+#User Input Function... ask user to input what the blanks are in a sentence.
+#. Show user sentence, ask to answer blanks
+# Prompt user for answer to first blank
+#Check to see if their answer is the same as blank. (Pass correct answer to replace[] or input?)
+#If correct, recievce point * difficulty multiplier
+#4 levels (Or, 4 questions)
+#Easy, normal, hard (Difficulty defines number os retries and score multiplier)
+# Easy = 3 tries, 1x score multiplier
+# Normal = 2 tries, 1.3x score multiplier
+# Hard = 1 try, 1.6 score multiplier
+# score = correct/total + remaining tries * score multiplier
+# When player guesses right, answer will display, if not it will ask again (removing a try)
+# One way to check if correct: have blanks replaced with user input, then pass final string and compare to correct
+#string.
+
+def playerInput(word):
+    """This function prompts user for input and compares with input word to determine if matched, returning true or
+    false."""
+    playerAnswer = input("Please enter the correct answer for the blank: ")
+    print(playerAnswer)
+    if word == playerAnswer:
+        return True
+    return False
 
 def createQuestion(questionAnswer, blankSet, questionString):
     print("current question index: " + str(questionIndex))
@@ -93,9 +116,9 @@ adding ___2___ separated by commas between the parentheses. ___1___s by default 
 don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
 tuple, and ___4___ or can be more complicated such as objects and lambda functions.'''
 
-print("questionBank[0] = " + str(questionBank[0]))
-print("questionBank[1] = " + str(questionBank[1]))
-print("questionBank[1][1][2] = " + str(questionBank[1][1][2]))
+#print("questionBank[0] = " + str(questionBank[0]))
+#print("questionBank[1] = " + str(questionBank[1]))
+#print("questionBank[1][1][2] = " + str(questionBank[1][1][2]))
 
 def text_in_qs(word, blankSet):
     for tiq in blankSet:
@@ -116,4 +139,4 @@ def play_game(inputString, blankSet):
 
 print (play_game(questionString, blankSet))
 
-
+playerInput()
