@@ -67,7 +67,10 @@
 # When player guesses right, answer will display, if not it will ask again (removing a try)
 # One way to check if correct: have blanks replaced with user input, then pass final string and compare to correct
 #string.
+
+
 import random
+from colorama import Fore, Back, Style
 
 activeQuestion = 0
 questionIndex = 0
@@ -84,6 +87,9 @@ questionString = '''A ___1___ is created with the def keyword. You specify the i
 adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
 don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
 tuple, and ___4___ or can be more complicated such as objects and lambda functions.'''
+
+def cls():
+    os.system('cls' if os.name=='nt' else 'clear')
 
 
 def assign_unique_id():
@@ -107,10 +113,18 @@ def select_question(random=False):
     #if activeQuestion not in playedQuestions:
 
 
+def create_question(questionAnswer, blankSet, questionString):
+    """Docstring"""
+    qsGroup = [assign_unique_id()]
+    qsGroup.append([questionAnswer, blankSet, questionString])
+    questionBank.append(qsGroup)
+
+
 def load_questions():
     """Docstring"""
-    createQuestion(["banana"], ["___1___"], '''A ___1___ is yellow.''')
-    createQuestion(["function", "variables", "values", "lists"], ["___1___", "___2___", "___3___", "___4___"],  '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
+    create_question(["banana"], ["___1___"], '''A ___1___ is yellow.''')
+    create_question(["function", "variables", "values", "lists"], ["___1___", "___2___", "___3___", "___4___"],
+                    '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
     adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
     don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
     tuple, and ___4___ or can be more complicated such as objects and lambda functions.''')
@@ -118,15 +132,8 @@ def load_questions():
 
 def player_input():
     """Docstring"""
-    playerAnswer = input("Please enter the correct answer for the blank: ")
+    playerAnswer = input(Fore.GREEN + "Please enter the correct answer for the blank: " + Fore.RESET)
     return playerAnswer
-
-
-def create_question(questionAnswer, blankSet, questionString):
-    """Docstring"""
-    qsGroup = [assignUniqueID()]
-    qsGroup.append([questionAnswer, blankSet, questionString])
-    questionBank.append(qsGroup)
 
 
 def text_in_qs(word, blankSet):
@@ -140,22 +147,34 @@ def text_in_qs(word, blankSet):
 def difficulty_selector():
     """Docstring"""
     global difficulty
-    playerAnswer = input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: ")
-    if playerAnswer == 3:
-        difficulty = 3
-    elif playerAnswer == 2:
-        difficulty = 2
-    elif playerAnswer == 1:
-        difficulty = 1
+    playerAnswer = input(Fore.LIGHTRED_EX + "Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: " +
+                         Fore.RESET)
+    while playerAnswer not in ["1", "2", "3"]:
+        print("Please enter the number 1, 2, or 3 for your difficulty level.")
+        playerAnswer = input(Fore.LIGHTRED_EX + "Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: " + Fore.RESET)
+    if playerAnswer == "3":
+        print("You've selected " + Style.DIM + Back.RED + "HARD" + Back.RESET + ". This gives you 1 attempt to solve each question while gaining triple points for each question answered."+ Style.RESET_ALL)
+        difficulty = "3"
+    elif playerAnswer == "2":
+        print("You've selected " + Style.DIM + Back.RED + "NORMAL" + Back.RESET + ". This gives you 2 attempts to solve each question while gaining 150% points for "
+              "each question answered."+ Style.RESET_ALL)
+        difficulty = "2"
+    elif playerAnswer == "1":
+        print("You've selected " + Style.DIM + Back.RED + "EASY" + Back.RESET + ". This gives you 3 attempta to solve each question while gaining standard points "
+              "for each question answered." + Style.RESET_ALL)
+        difficulty = "1"
+    return playerAnswer
 
 
 def play_game(inputString, blankSet):
     """Docstring"""
     replaced = []
     stringaslist = inputString.split()
+    print(Fore.GREEN + "Read the following question and fill in the blanks when prompted... " + Fore.RESET)
+    print(inputString)
     for text in stringaslist:
        if text_in_qs(text, blankSet) != None:
-           replaced.append(text.replace(text_in_qs(text, blankSet), playerInput()))
+           replaced.append(text.replace(text_in_qs(text, blankSet), player_input()))
        else:
            replaced.append(text)
     return " ".join(replaced)
@@ -163,10 +182,12 @@ def play_game(inputString, blankSet):
 
 def game_controller(start=False):
     """Docstring"""
-    loadQuestions()
+    load_questions()
     if start == True:
-        print("Welcome to Alkarion's IPND Quiz Project!")
-        difficultySelector()
+        print(Fore.YELLOW + "=======================================================================================================" + Fore.RESET)
+        print(Fore.YELLOW + "                            " + "Welcome to Alkarion's IPND Quiz Project!" + Fore.RESET)
+        print(Fore.YELLOW + "=======================================================================================================" + Fore.RESET)
+        difficulty_selector()
         play_game(questionString, blankSet)
     return None
 
