@@ -17,15 +17,13 @@
 # To help you get started, we've provided a sample paragraph that you can use when testing your code.
 # Your game should consist of 3 or more levels, so you should add your own paragraphs as well!
 
-#Todo: function which controls flow of game? 1.Introduction 2. Question set 3.Score/conclusion stub
-#Todo: score stub
-#-----> leaderboard?
-#Todo: display question/answer stub
-#Todo: difficulty (with score modifier, and "try" count stub
-#Todo: lose/win stub
-#Todo: modify question iterator to select a question index from bank instead of single variable
-#Todo: Add userinput prompt
-#Todo: Determine how to replace blank with the correct answer and not "corgi"
+#Todo: Remove unecessary comments
+#Todo: Add docstrings for all functions
+#Todo: Clean up logic around execution
+#Todo: Add in difficulty modifers for attempts and score calculation
+#Todo: Have score returned when game is won or lost.
+#Todo: Maybe: Control how many questions are asked?
+#Todo: Naybe: Modify select_question to allow parameter to select specific question
 #=======================================================================================================================
 
 # The answer for ___1___ is 'function'. Can you figure out the others?
@@ -67,11 +65,11 @@
 # When player guesses right, answer will display, if not it will ask again (removing a try)
 # One way to check if correct: have blanks replaced with user input, then pass final string and compare to correct
 #string.
-
-
 import random
 from colorama import Fore, Back, Style
 
+attempts = 2
+score = 0
 activeQuestion = 0
 questionIndex = 0
 difficulty = 1
@@ -79,7 +77,7 @@ uniqueIDList = []
 playedQuestions = []
 questionBank = []
 #questionGroup = [qsID[[question][answer]]]
-#global questionIndex
+#questionIndex
 
 blankSet = ["___1___", "___2___", "___3___", "___4___"]
 questionAnswer = ["function", "variables", "values", "lists"]
@@ -87,9 +85,6 @@ questionString = '''A ___1___ is created with the def keyword. You specify the i
 adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
 don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
 tuple, and ___4___ or can be more complicated such as objects and lambda functions.'''
-
-def cls():
-    os.system('cls' if os.name=='nt' else 'clear')
 
 
 def assign_unique_id():
@@ -102,15 +97,6 @@ def assign_unique_id():
     questionIndex = questionIndex + 1
     uniqueIDList.append(questionIndex)
     return questionIndex
-
-
-def select_question(random=False):
-    """Docstring"""
-    global playedQuestions
-    global activeQuestion
-    if random == True:
-        activeQuestion = random.randint()
-    #if activeQuestion not in playedQuestions:
 
 
 def create_question(questionAnswer, blankSet, questionString):
@@ -129,10 +115,55 @@ def load_questions():
     don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
     tuple, and ___4___ or can be more complicated such as objects and lambda functions.''')
 
+def isQuestionPlayed(question):
+    if question in playedQuestions:
+        return True
+    return False
 
-def player_input():
+
+def select_question():
     """Docstring"""
-    playerAnswer = input(Fore.GREEN + "Please enter the correct answer for the blank: " + Fore.RESET)
+    global playedQuestions
+    global activeQuestion
+    for question in questionBank:
+        if isQuestionPlayed(question) == False:
+            playedQuestions.append(question)
+            activeQuestion = question
+            return activeQuestion
+    #randomPointer = random.randint(0, len(questionBank) - 1)
+    #if questionBank[randomPointer] not in playedQuestions:
+    #    playedQuestions.append(questionBank[randomPointer])
+    #    activeQuestion = questionBank[randomPointer]
+    #    return activeQuestion
+    #if ran#dom_result == True:
+    #activeQuestion = random.randint()
+
+
+def adjust_score():
+    global score
+    increase = 1 * difficulty
+    oldScore = score
+    score = int(score) + 1 * int(difficulty)
+    print("Your score of " + str(oldScore) + " has been increased by " + str(increase) + " points, totally to " + str(score) + "!")
+
+def adjust_attempts():
+    global attempts
+    attempts = attempts - 1
+    print("You've lost one attempt!" + " You have " + str(attempts) + " remaining.")
+    if attempts == 0:
+        print("GAME OVER.")
+        quit()
+
+def player_input(word, answer):
+    """Docstring"""
+    print(word)
+    print(answer)
+    print()
+    playerAnswer = input(Fore.GREEN + "Please enter the correct answer for: " + Fore.WHITE + word + " " + Fore.RESET)
+    if playerAnswer == answer:
+        adjust_score()
+    elif playerAnswer != answer:
+        adjust_attempts()
     return playerAnswer
 
 
@@ -142,6 +173,21 @@ def text_in_qs(word, blankSet):
         if tiq in word:
             return tiq
     return None
+
+
+def return_active_answer(blank):
+    print("blank: " + str(blank))
+    print("activeQuestion[1][1]: " + str(activeQuestion[1][1]))
+    print("activeQuestion[1][0]: " + str(activeQuestion[1][0]))
+    for index, item in enumerate(activeQuestion[1][1]):
+        if blank == item:
+            return activeQuestion[1][0][index]
+        print("activeQuestion[1][0][index]: " + str(activeQuestion[1][0][index]))
+        #print()
+        print("item: " + str(item))
+        #print(index)
+        #if text_in_qs(item, blank) != None:
+        #    return activeQuestion[1][0][index]
 
 
 def difficulty_selector():
@@ -172,10 +218,11 @@ def play_game(inputString, blankSet):
     stringaslist = inputString.split()
     print(Fore.GREEN + "Read the following question and fill in the blanks when prompted... " + Fore.RESET)
     print(inputString)
+    print()
     for text in stringaslist:
        if text_in_qs(text, blankSet) != None:
-           replaced.append(text.replace(text_in_qs(text, blankSet), player_input()))
-       else:
+           replaced.append(text.replace(text_in_qs(text, blankSet), player_input(text_in_qs(text, blankSet), return_active_answer(text_in_qs(text, blankSet)))))
+       else:#
            replaced.append(text)
     return " ".join(replaced)
 
@@ -188,7 +235,9 @@ def game_controller(start=False):
         print(Fore.YELLOW + "                            " + "Welcome to Alkarion's IPND Quiz Project!" + Fore.RESET)
         print(Fore.YELLOW + "=======================================================================================================" + Fore.RESET)
         difficulty_selector()
-        play_game(questionString, blankSet)
+        while len(playedQuestions) < len(questionBank):
+            select_question()
+            print(play_game(activeQuestion[1][2], activeQuestion[1][1]))
     return None
 
 
@@ -200,4 +249,20 @@ def game_controller(start=False):
 #print("questionBank[1][1][2] = " + str(questionBank[1][1][2]))
 #print(min(questionBank))
 
+
+
 game_controller(True)
+#print(select_question())
+#print(select_question())
+#print(activeQuestion)
+#print(activeQuestion[1][0])
+#print(activeQuestion[0][2])
+#print(activeQuestion[0][2])
+#print(activeQuestion[2])
+#def determineAnswer(blankSet):
+    #text_in_qs()
+
+#print(return_active_answer("__1___"))
+
+#print("max: " + str((questionBank[1])))
+#print("len: " + str(len(questionBank))
