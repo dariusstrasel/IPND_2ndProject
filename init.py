@@ -51,25 +51,8 @@
 # as ml_string, only that replacement words are swapped out with "corgi", since this
 # program cannot replace those words with user input.
 #=======================================================================================================================
-
-#global questionIndex
-questionIndex = 0
-uniqueIDList = []
-#questionGroup = [qsID[[question][answer]]]
-
 #Key to creating a list with multiple questions is emulating sql clause aka select, update, but represented as
 #functions.
-questionBank = []
-def assignUniqueID():
-    global questionIndex
-    global uniqueIDList
-    if questionIndex not in uniqueIDList:
-        uniqueIDList.append(questionIndex)
-        return questionIndex
-    questionIndex = questionIndex + 1
-    uniqueIDList.append(questionIndex)
-    return questionIndex
-
 #User Input Function... ask user to input what the blanks are in a sentence.
 #. Show user sentence, ask to answer blanks
 # Prompt user for answer to first blank
@@ -84,30 +67,16 @@ def assignUniqueID():
 # When player guesses right, answer will display, if not it will ask again (removing a try)
 # One way to check if correct: have blanks replaced with user input, then pass final string and compare to correct
 #string.
+import random
 
-def playerInput(word):
-    """This function prompts user for input and compares with input word to determine if matched, returning true or
-    false."""
-    playerAnswer = input("Please enter the correct answer for the blank: ")
-    print(playerAnswer)
-    if word == playerAnswer:
-        return True
-    return False
-
-def createQuestion(questionAnswer, blankSet, questionString):
-    print("current question index: " + str(questionIndex))
-    qsGroup = [assignUniqueID()]
-    qsGroup.append([questionAnswer, blankSet, questionString])
-    questionBank.append(qsGroup)
-    print(questionBank)
-    print ("new question index: " + str(questionIndex))
-
-
-createQuestion(["banana"], ["___1___"], '''A ___1___ is yellow.''')
-createQuestion(["function", "variables", "values", "lists"], ["___1___", "___2___", "___3___", "___4___"],  '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
-adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
-don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
-tuple, and ___4___ or can be more complicated such as objects and lambda functions.''')
+activeQuestion = 0
+questionIndex = 0
+difficulty = 1
+uniqueIDList = []
+playedQuestions = []
+questionBank = []
+#questionGroup = [qsID[[question][answer]]]
+#global questionIndex
 
 blankSet = ["___1___", "___2___", "___3___", "___4___"]
 questionAnswer = ["function", "variables", "values", "lists"]
@@ -116,27 +85,98 @@ adding ___2___ separated by commas between the parentheses. ___1___s by default 
 don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
 tuple, and ___4___ or can be more complicated such as objects and lambda functions.'''
 
-#print("questionBank[0] = " + str(questionBank[0]))
-#print("questionBank[1] = " + str(questionBank[1]))
-#print("questionBank[1][1][2] = " + str(questionBank[1][1][2]))
+
+def assign_unique_id():
+    """Docstring"""
+    global questionIndex
+    global uniqueIDList
+    if questionIndex not in uniqueIDList:
+        uniqueIDList.append(questionIndex)
+        return questionIndex
+    questionIndex = questionIndex + 1
+    uniqueIDList.append(questionIndex)
+    return questionIndex
+
+
+def select_question(random=False):
+    """Docstring"""
+    global playedQuestions
+    global activeQuestion
+    if random == True:
+        activeQuestion = random.randint()
+    #if activeQuestion not in playedQuestions:
+
+
+def load_questions():
+    """Docstring"""
+    createQuestion(["banana"], ["___1___"], '''A ___1___ is yellow.''')
+    createQuestion(["function", "variables", "values", "lists"], ["___1___", "___2___", "___3___", "___4___"],  '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
+    adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
+    don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
+    tuple, and ___4___ or can be more complicated such as objects and lambda functions.''')
+
+
+def player_input():
+    """Docstring"""
+    playerAnswer = input("Please enter the correct answer for the blank: ")
+    return playerAnswer
+
+
+def create_question(questionAnswer, blankSet, questionString):
+    """Docstring"""
+    qsGroup = [assignUniqueID()]
+    qsGroup.append([questionAnswer, blankSet, questionString])
+    questionBank.append(qsGroup)
+
 
 def text_in_qs(word, blankSet):
+    """Docstring"""
     for tiq in blankSet:
         if tiq in word:
             return tiq
     return None
 
 
+def difficulty_selector():
+    """Docstring"""
+    global difficulty
+    playerAnswer = input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: ")
+    if playerAnswer == 3:
+        difficulty = 3
+    elif playerAnswer == 2:
+        difficulty = 2
+    elif playerAnswer == 1:
+        difficulty = 1
+
+
 def play_game(inputString, blankSet):
+    """Docstring"""
     replaced = []
     stringaslist = inputString.split()
     for text in stringaslist:
-        if text_in_qs(text, blankSet) != None:
-            replaced.append(text.replace(text_in_qs(text, blankSet), "corgi"))
-        else:
-            replaced.append(text)
+       if text_in_qs(text, blankSet) != None:
+           replaced.append(text.replace(text_in_qs(text, blankSet), playerInput()))
+       else:
+           replaced.append(text)
     return " ".join(replaced)
 
-print (play_game(questionString, blankSet))
 
-playerInput()
+def game_controller(start=False):
+    """Docstring"""
+    loadQuestions()
+    if start == True:
+        print("Welcome to Alkarion's IPND Quiz Project!")
+        difficultySelector()
+        play_game(questionString, blankSet)
+    return None
+
+
+#print(questionBank)
+#print("current question index: " + str(questionIndex))
+#print ("new question index: " + str(questionIndex))
+#print("questionBank[0] = " + str(questionBank[0]))
+#print("questionBank[1] = " + str(questionBank[1]))
+#print("questionBank[1][1][2] = " + str(questionBank[1][1][2]))
+#print(min(questionBank))
+
+game_controller(True)
