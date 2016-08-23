@@ -216,14 +216,22 @@ def play_game(inputString, blankSet):
     """Docstring"""
     replaced = []
     stringaslist = inputString.split()
+    movingList = inputString.split()
     print(Fore.GREEN + "Read the following question and fill in the blanks when prompted... " + Fore.RESET)
     print(inputString)
     print()
     for text in stringaslist:
        if text_in_qs(text, blankSet) != None:
            replaced.append(text.replace(text_in_qs(text, blankSet), player_input(text_in_qs(text, blankSet), return_active_answer(text_in_qs(text, blankSet)))))
+           print()
+           movingList = movingList + replaced
+           for text in movingList:
+               for item in replaced:
+                   text = item
+           print(Fore.RED + " ".join(movingList) + Fore.RESET)
        else:#
            replaced.append(text)
+
     return " ".join(replaced)
 
 
