@@ -73,18 +73,12 @@ score = 0
 activeQuestion = 0
 questionIndex = 0
 difficulty = 1
+scoreMultiplier = 1
 uniqueIDList = []
 playedQuestions = []
 questionBank = []
 #questionGroup = [qsID[[question][answer]]]
 #questionIndex
-
-blankSet = ["___1___", "___2___", "___3___", "___4___"]
-questionAnswer = ["function", "variables", "values", "lists"]
-questionString = '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
-adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
-don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
-tuple, and ___4___ or can be more complicated such as objects and lambda functions.'''
 
 
 def assign_unique_id():
@@ -144,7 +138,7 @@ def adjust_score():
     increase = 1 * difficulty
     oldScore = score
     score = int(score) + 1 * int(difficulty)
-    print("Your score of " + str(oldScore) + " has been increased by " + str(increase) + " points, totally to " + str(score) + "!")
+    print("Your score of " + str(oldScore) + " has been increased by " + str(increase) + " points, totaling to " + str(score) + "!")
 
 def adjust_attempts():
     global attempts
@@ -156,9 +150,9 @@ def adjust_attempts():
 
 def player_input(word, answer):
     """Docstring"""
-    print(word)
+    #print(word)
     print(answer)
-    print()
+    #print()
     playerAnswer = input(Fore.GREEN + "Please enter the correct answer for: " + Fore.WHITE + word + " " + Fore.RESET)
     if playerAnswer == answer:
         adjust_score()
@@ -176,9 +170,9 @@ def text_in_qs(word, blankSet):
 
 
 def return_active_answer(blank):
-    print("blank: " + str(blank))
-    print("activeQuestion[1][1]: " + str(activeQuestion[1][1]))
-    print("activeQuestion[1][0]: " + str(activeQuestion[1][0]))
+    #print("blank: " + str(blank))
+    #print("activeQuestion[1][1]: " + str(activeQuestion[1][1]))
+    #print("activeQuestion[1][0]: " + str(activeQuestion[1][0]))
     for index, item in enumerate(activeQuestion[1][1]):
         if blank == item:
             return activeQuestion[1][0][index]
@@ -209,29 +203,45 @@ def difficulty_selector():
         print("You've selected " + Style.DIM + Back.RED + "EASY" + Back.RESET + ". This gives you 3 attempta to solve each question while gaining standard points "
               "for each question answered." + Style.RESET_ALL)
         difficulty = "1"
+    print()
     return playerAnswer
+
+
+def difficulty_init():
+    if difficulty == 3:
+        scoreMultiplier = 3
+        attempts = 1
+    elif difficulty == 2:
+        scoreMultiplier = 1.5
+        attempts = 2
+    elif difficulty == 1:
+        scoreMultiplier = 1
+        attempts = 3
+
+
+def update_question_string(list1, list2):
+    mergedlist = list(set(list1 + list2))
 
 
 def play_game(inputString, blankSet):
     """Docstring"""
     replaced = []
     stringaslist = inputString.split()
-    movingList = inputString.split()
-    print(Fore.GREEN + "Read the following question and fill in the blanks when prompted... " + Fore.RESET)
+    print(Fore.GREEN + "Read the following sentence and fill in the blanks when prompted... " + Fore.RESET)
     print(inputString)
     print()
     for text in stringaslist:
        if text_in_qs(text, blankSet) != None:
            replaced.append(text.replace(text_in_qs(text, blankSet), player_input(text_in_qs(text, blankSet), return_active_answer(text_in_qs(text, blankSet)))))
            print()
-           movingList = movingList + replaced
-           for text in movingList:
-               for item in replaced:
-                   text = item
-           print(Fore.RED + " ".join(movingList) + Fore.RESET)
+           resulting_list = list(replaced)
+           resulting_list.extend(x for x in stringaslist if x not in resulting_list)
+           if blankSet in resulting_list:
+               resulting_list - blankSet
+           print(" ".join(resulting_list))
+           #print(" ".join(replaced))
        else:#
            replaced.append(text)
-
     return " ".join(replaced)
 
 
@@ -246,6 +256,7 @@ def game_controller(start=False):
         while len(playedQuestions) < len(questionBank):
             select_question()
             print(play_game(activeQuestion[1][2], activeQuestion[1][1]))
+            print()
     return None
 
 
