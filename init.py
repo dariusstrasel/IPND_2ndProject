@@ -65,24 +65,28 @@
 # When player guesses right, answer will display, if not it will ask again (removing a try)
 # One way to check if correct: have blanks replaced with user input, then pass final string and compare to correct
 #string.
-import random
-from colorama import Fore, Back, Style
 
-attempts = 2
-score = 0
-activeQuestion = 0
-questionIndex = 0
-difficulty = 1
-scoreMultiplier = 1
-uniqueIDList = []
-playedQuestions = []
-questionBank = []
-#questionGroup = [qsID[[question][answer]]]
-#questionIndex
+#The colorama module is used to color output text into the terminal to give the game a little visual flair. Its also
+# cross-platform. It is mostly used in the following way: print(Fore.COLOR + "TEXT" + Fore.RESET) Fore is text color,
+# Back is text background, and Style is text brightness.
+from colorama import Fore, Back, Style
+import textwrap
+
+attempts = 2 #attempts are used to track how often a user fails to answer a question.
+score = 0 #asthetic variable to reward player for being adept at answering questions
+activeQuestion = 0 #abstracted variable to allow all functions to refer to the same value.
+questionIndex = 0 #used to iterate question ID's as a method of generating uniqueness based on ordinality.
+difficulty = 1 #Used to track the difficulty selected by the player.
+scoreMultiplier = 1 #Used to adjust score based on difficulty.
+baseQuestionWeight = 1 #Used to define the lowest value a question is worth.
+uniqueIDList = [] #list used to track used question IDs
+playedQuestions = [] #list used to track questions that have already been played.
+questionBank = [] #list used to store questions as structured lists
 
 
 def assign_unique_id():
-    """Docstring"""
+    """Helper function which iterates upon an index to generate a new number. This is designed to be called when
+    creating a question, and appending to questionBank[]."""
     global questionIndex
     global uniqueIDList
     if questionIndex not in uniqueIDList:
@@ -94,14 +98,16 @@ def assign_unique_id():
 
 
 def create_question(questionAnswer, blankSet, questionString):
-    """Docstring"""
+    """This function nests inputs questionAnswer, blankSet and questionString with assign_unique_id() into the
+    following list structure: questionBank[ID[questionAnswer, blankSet, questionString] The ordinal positions are
+    crucial for return_active_answer()."""
     qsGroup = [assign_unique_id()]
     qsGroup.append([questionAnswer, blankSet, questionString])
     questionBank.append(qsGroup)
 
 
 def load_questions():
-    """Docstring"""
+    """This functions wraps any predefined create_question() in order to execute create_question*n at once."""
     create_question(["banana"], ["___1___"], '''A ___1___ is yellow.''')
     create_question(["function", "variables", "values", "lists"], ["___1___", "___2___", "___3___", "___4___"],
                     '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
@@ -109,14 +115,18 @@ def load_questions():
     don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
     tuple, and ___4___ or can be more complicated such as objects and lambda functions.''')
 
+
 def isQuestionPlayed(question):
+    """This function checks if the input, question, has been played by checking if in playedQuestions[]."""
     if question in playedQuestions:
         return True
     return False
 
 
 def select_question():
-    """Docstring"""
+    """This function iterates through the questionBank[] to select a question which has not yet been played. It assigns
+    this question to a global variable in order to abstract the contents of questionBank and the logic all proceding
+    functions use to refer to a question."""
     global playedQuestions
     global activeQuestion
     for question in questionBank:
@@ -134,35 +144,46 @@ def select_question():
 
 
 def adjust_score():
+    """This function adjusts a user's score according to the difficulty modifier and prints to the terminal what their
+    new score is."""
     global score
-    increase = 1 * difficulty
+    increase = baseQuestionWeight * scoreMultiplier
     oldScore = score
-    score = int(score) + 1 * int(difficulty)
+    score = int(score) + increase
     print("Your score of " + str(oldScore) + " has been increased by " + str(increase) + " points, totaling to " + str(score) + "!")
 
+
 def adjust_attempts():
+    """This function reduces a user's attempts and checks if 0 in order to end the game."""
     global attempts
     attempts = attempts - 1
     print("You've lost one attempt!" + " You have " + str(attempts) + " remaining.")
+    if attempts == 1:
+        print("WARNING! You will lose the game if you answer another question incorrectly.")
     if attempts == 0:
         print("GAME OVER.")
         quit()
 
+
 def player_input(word, answer):
-    """Docstring"""
+    """This function prompts the user to fill in a blank (passed in as input 'word) and compares it to input 'answer'
+    in order to determine if their answer is correct."""
     #print(word)
     print(answer)
     #print()
-    playerAnswer = input(Fore.GREEN + "Please enter the correct answer for: " + Fore.WHITE + word + " " + Fore.RESET)
-    if playerAnswer == answer:
-        adjust_score()
-    elif playerAnswer != answer:
-        adjust_attempts()
+    playerAnswer = None
+    while playerAnswer != answer:
+        playerAnswer = input(Fore.GREEN + "Please enter the correct answer for: " + Fore.WHITE + word + " " + Fore.RESET)
+        if playerAnswer == answer:
+            adjust_score()
+        elif playerAnswer != answer:
+            adjust_attempts()
     return playerAnswer
 
 
 def text_in_qs(word, blankSet):
-    """Docstring"""
+    """This function will check the contents of 'blankSet' in comparison to 'word' and return 'word' if it finds it
+    within itself. aka the 'buddha' function."""
     for tiq in blankSet:
         if tiq in word:
             return tiq
@@ -170,6 +191,8 @@ def text_in_qs(word, blankSet):
 
 
 def return_active_answer(blank):
+    """This nifty function will compare input 'blank' with the reciprocal index of the activeQuestion[1][0] to return
+    the respective answer for the blank. """
     #print("blank: " + str(blank))
     #print("activeQuestion[1][1]: " + str(activeQuestion[1][1]))
     #print("activeQuestion[1][0]: " + str(activeQuestion[1][0]))
@@ -185,7 +208,7 @@ def return_active_answer(blank):
 
 
 def difficulty_selector():
-    """Docstring"""
+    """This function prompts the user to select their difficulty and describe how difficulty affects gameplay."""
     global difficulty
     playerAnswer = input(Fore.LIGHTRED_EX + "Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: " +
                          Fore.RESET)
@@ -193,69 +216,75 @@ def difficulty_selector():
         print("Please enter the number 1, 2, or 3 for your difficulty level.")
         playerAnswer = input(Fore.LIGHTRED_EX + "Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: " + Fore.RESET)
     if playerAnswer == "3":
-        print("You've selected " + Style.DIM + Back.RED + "HARD" + Back.RESET + ". This gives you 1 attempt to solve each question while gaining triple points for each question answered."+ Style.RESET_ALL)
-        difficulty = "3"
+        difficulty_init("HARD", "3", 3, 1)
     elif playerAnswer == "2":
-        print("You've selected " + Style.DIM + Back.RED + "NORMAL" + Back.RESET + ". This gives you 2 attempts to solve each question while gaining 150% points for "
-              "each question answered."+ Style.RESET_ALL)
-        difficulty = "2"
+        difficulty_init("MEDIUM", "2", 2, 2)
     elif playerAnswer == "1":
-        print("You've selected " + Style.DIM + Back.RED + "EASY" + Back.RESET + ". This gives you 3 attempta to solve each question while gaining standard points "
-              "for each question answered." + Style.RESET_ALL)
-        difficulty = "1"
+        difficulty_init("EASY", "1", 1, 3)
     print()
     return playerAnswer
 
 
-def difficulty_init():
-    if difficulty == 3:
-        scoreMultiplier = 3
-        attempts = 1
-    elif difficulty == 2:
-        scoreMultiplier = 1.5
-        attempts = 2
-    elif difficulty == 1:
-        scoreMultiplier = 1
-        attempts = 3
+def difficulty_init(difficultyString, difficultyValue, scoreAdjuster, attemptCount):
+    global scoreMultiplier
+    global attempts
+    global difficulty
+    difficulty = difficultyValue
+    attempts = attemptCount
+    scoreMultiplier = scoreAdjuster
+    print("You've selected " + Style.DIM + Back.RED + difficultyString + Back.RESET + ". This gives you "
+          + str(attempts) + " attempt(s) to solve each question while gaining " + str(scoreMultiplier) + "x points."
+          + Style.RESET_ALL)
 
 
-def update_question_string(list1, list2):
-    mergedlist = list(set(list1 + list2))
+def attempt_and_score_text():
+    """This function prints out a colored graphic to the player representing their score and attempts."""
+    print("(" + Fore.RED
+          + "♥" * attempts + Fore.RESET + Fore.GREEN + ")" + " (" + Fore.RESET + Fore.LIGHTYELLOW_EX
+          + "◎" * score + Fore.RESET + Fore.GREEN + ")" + Fore.RESET)
+
+
+def test(input):
+    string = input
+    print(string)
+    return textwrap.wrap(string, 70)
 
 
 def play_game(inputString, blankSet):
-    """Docstring"""
+    """This function compares inputString to blankSet to determine when and where to prompt the user for an answer. It
+    will also mutate inputString to return a new question with its respective blanks filled as they are answered
+    correctly by the player."""
     replaced = []
     stringaslist = inputString.split()
-    print(Fore.GREEN + "Read the following sentence and fill in the blanks when prompted... " + Fore.RESET)
+    print(Fore.GREEN + "Read the following sentence(s) and fill in the blanks when prompted... ")
+    attempt_and_score_text()
+    print("=" * 103)
     print(inputString)
     print()
     for text in stringaslist:
        if text_in_qs(text, blankSet) != None:
            replaced.append(text.replace(text_in_qs(text, blankSet), player_input(text_in_qs(text, blankSet), return_active_answer(text_in_qs(text, blankSet)))))
            print()
-           resulting_list = list(replaced)
-           resulting_list.extend(x for x in stringaslist if x not in resulting_list)
-           if blankSet in resulting_list:
-               resulting_list - blankSet
-           print(" ".join(resulting_list))
-           #print(" ".join(replaced))
-       else:#
+           attempt_and_score_text()
+           print("=" * 103)
+           print(Fore.YELLOW +" ".join(replaced).replace(text, return_active_answer(text_in_qs(text, blankSet))) + Fore.RESET + " " + " ".join(stringaslist[len(replaced):]))
+       else:
            replaced.append(text)
-    return " ".join(replaced)
+
 
 
 def game_controller(start=False):
-    """Docstring"""
+    """This function serves as a wrapper to call all preceding functions. It also will not execute unless explicitly
+    passed in as True."""
     load_questions()
     if start == True:
-        print(Fore.YELLOW + "=======================================================================================================" + Fore.RESET)
-        print(Fore.YELLOW + "                            " + "Welcome to Alkarion's IPND Quiz Project!" + Fore.RESET)
-        print(Fore.YELLOW + "=======================================================================================================" + Fore.RESET)
+        print(Fore.YELLOW + "=" * 103 + Fore.RESET)
+        print(Fore.YELLOW + " " * 28 + "Welcome to Alkarion's IPND Quiz Project!" + Fore.RESET)
+        print(Fore.YELLOW + "=" * 103 + Fore.RESET)
         difficulty_selector()
         while len(playedQuestions) < len(questionBank):
             select_question()
-            print(play_game(activeQuestion[1][2], activeQuestion[1][1]))
+            play_game(activeQuestion[1][2], activeQuestion[1][1])
             print()
     return None
 
