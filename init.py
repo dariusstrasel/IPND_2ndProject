@@ -110,7 +110,7 @@ def adjust_attempts():
 def player_input(word, answer):
     """This function prompts the user to fill in a blank (passed in as input 'word) and compares it to input 'answer'
     in order to determine if their answer is correct."""
-    print(answer)
+    #print(answer)
     playerAnswer = None
     while playerAnswer != answer:
         playerAnswer = input(Fore.GREEN + "Please enter the correct answer for: " + Fore.WHITE + word + " " + Fore.RESET)
