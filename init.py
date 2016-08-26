@@ -1,76 +1,14 @@
 #=======================================================================================================================
 # IPND Stage 2 Final Project
-
-# You've built a Mad-Libs game with some help from Sean.
-# Now you'll work on your own game to practice your skills and demonstrate what you've learned.
-
-# For this project, you'll be building a Fill-in-the-Blanks quiz.
-# Your quiz will prompt a user with a paragraph containing several blanks.
-# The user should then be asked to fill in each blank appropriately to complete the paragraph.
-# This can be used as a study tool to help you remember important vocabulary!
-
-# Note: Your game will have to accept user input so, like the Mad Libs generator,
-# you won't be able to run it using Sublime's `Build` feature.
-# Instead you'll need to run the program in Terminal or IDLE.
-# Refer to Work Session 5 if you need a refresher on how to do this.
-
-# To help you get started, we've provided a sample paragraph that you can use when testing your code.
-# Your game should consist of 3 or more levels, so you should add your own paragraphs as well!
-
-#Todo: Remove unecessary comments
-#Todo: Add docstrings for all functions
-#Todo: Clean up logic around execution
-#Todo: Add in difficulty modifers for attempts and score calculation
-#Todo: Have score returned when game is won or lost.
-#Todo: Maybe: Control how many questions are asked?
-#Todo: Naybe: Modify select_question to allow parameter to select specific question
+# Author: Darius 'Alkarion' Strasel
+# Description: The following program has been designed in accordance with Udacity's Stage 2 Project requirements:
+#
 #=======================================================================================================================
-
-# The answer for ___1___ is 'function'. Can you figure out the others?
-
-# We've also given you a file called fill-in-the-blanks.pyc which is a working version of the project.
-# A .pyc file is a Python file that has been translated into "byte code".
-# This means the code will run the same as the original .py file, but when you open it
-# it won't look like Python code! But you can run it just like a regular Python file
-# to see how your code should behave.
-
-# Hint: It might help to think about how this project relates to the Mad Libs generator you built with Sean.
-# In the Mad Libs generator, you take a paragraph and replace all instances of NOUN and VERB.
-# How can you adapt that design to work with numbered blanks?
-
-# If you need help, you can sign up for a 1 on 1 coaching appointment: https://calendly.com/ipnd1-1/20min/
-
-#=======================================================================================================================
-# The following code is for the mad-lib generator:
-# Write code for the function play_game, which takes in as inputs parts_of_speech
-# (a list of acceptable replacement words) and ml_string (a string that
-# can contain replacement words that are found in parts_of_speech). Your play_game
-# function should return the joined list replaced, which will have the same structure
-# as ml_string, only that replacement words are swapped out with "corgi", since this
-# program cannot replace those words with user input.
-#=======================================================================================================================
-#Key to creating a list with multiple questions is emulating sql clause aka select, update, but represented as
-#functions.
-#User Input Function... ask user to input what the blanks are in a sentence.
-#. Show user sentence, ask to answer blanks
-# Prompt user for answer to first blank
-#Check to see if their answer is the same as blank. (Pass correct answer to replace[] or input?)
-#If correct, recievce point * difficulty multiplier
-#4 levels (Or, 4 questions)
-#Easy, normal, hard (Difficulty defines number os retries and score multiplier)
-# Easy = 3 tries, 1x score multiplier
-# Normal = 2 tries, 1.3x score multiplier
-# Hard = 1 try, 1.6 score multiplier
-# score = correct/total + remaining tries * score multiplier
-# When player guesses right, answer will display, if not it will ask again (removing a try)
-# One way to check if correct: have blanks replaced with user input, then pass final string and compare to correct
-#string.
 
 #The colorama module is used to color output text into the terminal to give the game a little visual flair. Its also
 # cross-platform. It is mostly used in the following way: print(Fore.COLOR + "TEXT" + Fore.RESET) Fore is text color,
 # Back is text background, and Style is text brightness.
 from colorama import Fore, Back, Style
-import textwrap
 
 attempts = 2 #attempts are used to track how often a user fails to answer a question.
 score = 0 #asthetic variable to reward player for being adept at answering questions
@@ -82,6 +20,7 @@ baseQuestionWeight = 1 #Used to define the lowest value a question is worth.
 uniqueIDList = [] #list used to track used question IDs
 playedQuestions = [] #list used to track questions that have already been played.
 questionBank = [] #list used to store questions as structured lists
+questionCount = len(questionBank) #used to track specified amount fo questions to review
 
 
 def assign_unique_id():
@@ -108,12 +47,22 @@ def create_question(questionAnswer, blankSet, questionString):
 
 def load_questions():
     """This functions wraps any predefined create_question() in order to execute create_question*n at once."""
-    create_question(["banana"], ["___1___"], '''A ___1___ is yellow.''')
     create_question(["function", "variables", "values", "lists"], ["___1___", "___2___", "___3___", "___4___"],
                     '''A ___1___ is created with the def keyword. You specify the inputs a ___1___ takes by
     adding ___2___ separated by commas between the parentheses. ___1___s by default return ___3___ if you
     don't specify the value to return. ___2___ can be standard data types such as string, number, dictionary,
     tuple, and ___4___ or can be more complicated such as objects and lambda functions.''')
+    create_question(["Dictionaries", "datatype", "key-value"], ["___1___", "___2___", "___3___"], '''___1___ are Python's built-in associative ___2___.
+    A ___1___ is made of ___3___ pairs where each key corresponds to a value.
+    Like sets, ___1___ are unordered.''')
+    create_question(["comments"], ["___1___"],
+                    '''Augmenting code with human readable descriptions, or ___1___, can help document design decisions.''')
+    create_question(["Variable", "equality"], ["___1___", "___2___"], '''___1___s are assigned values using the = operator, which is not to be confused with the == sign used for testing ___2___.
+    A ___1___ can hold almost any type of value such as lists, dictionaries, functions.''')
+    create_question(["Tuple", "immutable"], ["___1___", "___2___"],
+                    '''___1___s are a Python datatype that holds an ordered collection of values, which can be of any type. Python tuples are "___2___," meaning that they cannot be changed once created.''')
+    create_question(["string", "changed"], ["___1___", "___2___"],
+                    '''___1___s store characters and have many built-in convenience methods that let you modify their content. ___1___s are immutable, meaning they cannot be ___2___ in place.''')
 
 
 def isQuestionPlayed(question):
@@ -134,13 +83,6 @@ def select_question():
             playedQuestions.append(question)
             activeQuestion = question
             return activeQuestion
-    #randomPointer = random.randint(0, len(questionBank) - 1)
-    #if questionBank[randomPointer] not in playedQuestions:
-    #    playedQuestions.append(questionBank[randomPointer])
-    #    activeQuestion = questionBank[randomPointer]
-    #    return activeQuestion
-    #if ran#dom_result == True:
-    #activeQuestion = random.randint()
 
 
 def adjust_score():
@@ -168,9 +110,7 @@ def adjust_attempts():
 def player_input(word, answer):
     """This function prompts the user to fill in a blank (passed in as input 'word) and compares it to input 'answer'
     in order to determine if their answer is correct."""
-    #print(word)
     print(answer)
-    #print()
     playerAnswer = None
     while playerAnswer != answer:
         playerAnswer = input(Fore.GREEN + "Please enter the correct answer for: " + Fore.WHITE + word + " " + Fore.RESET)
@@ -193,18 +133,10 @@ def text_in_qs(word, blankSet):
 def return_active_answer(blank):
     """This nifty function will compare input 'blank' with the reciprocal index of the activeQuestion[1][0] to return
     the respective answer for the blank. """
-    #print("blank: " + str(blank))
-    #print("activeQuestion[1][1]: " + str(activeQuestion[1][1]))
-    #print("activeQuestion[1][0]: " + str(activeQuestion[1][0]))
     for index, item in enumerate(activeQuestion[1][1]):
         if blank == item:
             return activeQuestion[1][0][index]
-        print("activeQuestion[1][0][index]: " + str(activeQuestion[1][0][index]))
-        #print()
-        print("item: " + str(item))
-        #print(index)
-        #if text_in_qs(item, blank) != None:
-        #    return activeQuestion[1][0][index]
+
 
 
 def difficulty_selector():
@@ -226,6 +158,7 @@ def difficulty_selector():
 
 
 def difficulty_init(difficultyString, difficultyValue, scoreAdjuster, attemptCount):
+    """This function allows a call to set the game difficulty without repetitious if-trees."""
     global scoreMultiplier
     global attempts
     global difficulty
@@ -240,14 +173,8 @@ def difficulty_init(difficultyString, difficultyValue, scoreAdjuster, attemptCou
 def attempt_and_score_text():
     """This function prints out a colored graphic to the player representing their score and attempts."""
     print("(" + Fore.RED
-          + "♥" * attempts + Fore.RESET + Fore.GREEN + ")" + " (" + Fore.RESET + Fore.LIGHTYELLOW_EX
-          + "◎" * score + Fore.RESET + Fore.GREEN + ")" + Fore.RESET)
-
-
-def test(input):
-    string = input
-    print(string)
-    return textwrap.wrap(string, 70)
+          + "X" * attempts + Fore.RESET + Fore.GREEN + ")" + " (" + Fore.RESET + Fore.LIGHTYELLOW_EX
+          + "#" * score + Fore.RESET + Fore.GREEN + ")" + Fore.RESET)
 
 
 def play_game(inputString, blankSet):
@@ -267,10 +194,18 @@ def play_game(inputString, blankSet):
            print()
            attempt_and_score_text()
            print("=" * 103)
-           print(Fore.YELLOW +" ".join(replaced).replace(text, return_active_answer(text_in_qs(text, blankSet))) + Fore.RESET + " " + " ".join(stringaslist[len(replaced):]))
+           newList  = str(" ".join(replaced + stringaslist[len(replaced):]))
+           print(newList)
+           print()
        else:
            replaced.append(text)
 
+def prompt_question_count():
+    """This function allows the player to define how many question they want to review."""
+    global questionCount
+    playerAnswer = input(Fore.GREEN + "How many questions would you like to review?" + "("
+                         + str(1) + "-" + str(len(questionBank)) + ") ")
+    questionCount = playerAnswer
 
 
 def game_controller(start=False):
@@ -281,36 +216,13 @@ def game_controller(start=False):
         print(Fore.YELLOW + "=" * 103 + Fore.RESET)
         print(Fore.YELLOW + " " * 28 + "Welcome to Alkarion's IPND Quiz Project!" + Fore.RESET)
         print(Fore.YELLOW + "=" * 103 + Fore.RESET)
+        prompt_question_count()
         difficulty_selector()
-        while len(playedQuestions) < len(questionBank):
+        while len(playedQuestions) < int(questionCount):
             select_question()
             play_game(activeQuestion[1][2], activeQuestion[1][1])
             print()
+        print("Congratulations! You reviewed all the questions!")
     return None
 
-
-#print(questionBank)
-#print("current question index: " + str(questionIndex))
-#print ("new question index: " + str(questionIndex))
-#print("questionBank[0] = " + str(questionBank[0]))
-#print("questionBank[1] = " + str(questionBank[1]))
-#print("questionBank[1][1][2] = " + str(questionBank[1][1][2]))
-#print(min(questionBank))
-
-
-
 game_controller(True)
-#print(select_question())
-#print(select_question())
-#print(activeQuestion)
-#print(activeQuestion[1][0])
-#print(activeQuestion[0][2])
-#print(activeQuestion[0][2])
-#print(activeQuestion[2])
-#def determineAnswer(blankSet):
-    #text_in_qs()
-
-#print(return_active_answer("__1___"))
-
-#print("max: " + str((questionBank[1])))
-#print("len: " + str(len(questionBank))
