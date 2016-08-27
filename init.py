@@ -5,11 +5,6 @@
 #
 #=======================================================================================================================
 
-#The colorama module is used to color output text into the terminal to give the game a little visual flair. Its also
-# cross-platform. It is mostly used in the following way: print(Fore.COLOR + "TEXT" + Fore.RESET) Fore is text color,
-# Back is text background, and Style is text brightness.
-from colorama import Fore, Back, Style
-
 attempts = 2 #attempts are used to track how often a user fails to answer a question.
 score = 0 #asthetic variable to reward player for being adept at answering questions
 activeQuestion = 0 #abstracted variable to allow all functions to refer to the same value.
@@ -113,7 +108,7 @@ def player_input(word, answer):
     #print(answer)
     playerAnswer = None
     while playerAnswer != answer:
-        playerAnswer = input(Fore.GREEN + "Please enter the correct answer for: " + Fore.WHITE + word + " " + Fore.RESET)
+        playerAnswer = input("Please enter the correct answer for: " + word + " ")
         if playerAnswer == answer:
             adjust_score()
         elif playerAnswer != answer:
@@ -138,20 +133,24 @@ def return_active_answer(blank):
             return activeQuestion[1][0][index]
 
 
+def lower(text):
+    str = input
+    return str.lower()
+
 
 def difficulty_selector():
     """This function prompts the user to select their difficulty and describe how difficulty affects gameplay."""
     global difficulty
-    playerAnswer = input(Fore.LIGHTRED_EX + "Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: " +
-                         Fore.RESET)
-    while playerAnswer not in ["1", "2", "3"]:
-        print("Please enter the number 1, 2, or 3 for your difficulty level.")
-        playerAnswer = input(Fore.LIGHTRED_EX + "Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: " + Fore.RESET)
-    if playerAnswer == "3":
+    playerAnswer = input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: ")
+    while playerAnswer not in ["1", "2", "3", 1, 2, 3]:
+        playerAnswer = input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: ")
+    if playerAnswer.lower() in ["easy", "normal", "hard"]:
+        playerAnswer = input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: ")
+    if playerAnswer in ["3", 3]:
         difficulty_init("HARD", "3", 3, 1)
-    elif playerAnswer == "2":
-        difficulty_init("MEDIUM", "2", 2, 2)
-    elif playerAnswer == "1":
+    elif playerAnswer in ["2", 2]:
+        difficulty_init("Normal", "2", 2, 2)
+    elif playerAnswer in ["1", 1]:
         difficulty_init("EASY", "1", 1, 3)
     print()
     return playerAnswer
@@ -165,16 +164,14 @@ def difficulty_init(difficultyString, difficultyValue, scoreAdjuster, attemptCou
     difficulty = difficultyValue
     attempts = attemptCount
     scoreMultiplier = scoreAdjuster
-    print("You've selected " + Style.DIM + Back.RED + difficultyString + Back.RESET + ". This gives you "
-          + str(attempts) + " attempt(s) to solve each question while gaining " + str(scoreMultiplier) + "x points."
-          + Style.RESET_ALL)
+    print()
+    print("You've selected " + difficultyString + ". This gives you "
+          + str(attempts) + " attempt(s) to solve each question while gaining " + str(scoreMultiplier) + "x points.")
 
 
 def attempt_and_score_text():
     """This function prints out a colored graphic to the player representing their score and attempts."""
-    print("(" + Fore.RED
-          + "X" * attempts + Fore.RESET + Fore.GREEN + ")" + " (" + Fore.RESET + Fore.LIGHTYELLOW_EX
-          + "#" * score + Fore.RESET + Fore.GREEN + ")" + Fore.RESET)
+    print("(" + "X" * attempts + ")" + " (" + "#" * score + ")")
 
 
 def play_game(inputString, blankSet):
@@ -183,7 +180,7 @@ def play_game(inputString, blankSet):
     correctly by the player."""
     replaced = []
     stringaslist = inputString.split()
-    print(Fore.GREEN + "Read the following sentence(s) and fill in the blanks when prompted... ")
+    print("Read the following sentence(s) and fill in the blanks when prompted... ")
     attempt_and_score_text()
     print("=" * 103)
     print(inputString)
@@ -203,7 +200,7 @@ def play_game(inputString, blankSet):
 def prompt_question_count():
     """This function allows the player to define how many question they want to review."""
     global questionCount
-    playerAnswer = input(Fore.GREEN + "How many questions would you like to review?" + "("
+    playerAnswer = input("How many questions would you like to review?" + "("
                          + str(1) + "-" + str(len(questionBank)) + ") ")
     questionCount = playerAnswer
 
@@ -213,9 +210,9 @@ def game_controller(start=False):
     passed in as True."""
     load_questions()
     if start == True:
-        print(Fore.YELLOW + "=" * 103 + Fore.RESET)
-        print(Fore.YELLOW + " " * 28 + "Welcome to Alkarion's IPND Quiz Project!" + Fore.RESET)
-        print(Fore.YELLOW + "=" * 103 + Fore.RESET)
+        #print("=" * 103 )
+        print(" " * 28 + "Welcome to Alkarion's IPND Quiz Project!")
+        #print("=" * 103 )
         prompt_question_count()
         difficulty_selector()
         while len(playedQuestions) < int(questionCount):
