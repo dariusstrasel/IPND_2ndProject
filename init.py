@@ -142,15 +142,15 @@ def difficulty_selector():
     """This function prompts the user to select their difficulty and describe how difficulty affects gameplay."""
     global difficulty
     playerAnswer = str(input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: "))
-    while playerAnswer not in ["1", "2", "3", 1, 2, 3]:
+    while playerAnswer not in ["1", "2", "3"]:
         playerAnswer = input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: ")
     if playerAnswer.lower() in ["easy", "normal", "hard"]:
         playerAnswer = input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: ")
-    if playerAnswer in ["3", 3]:
+    if playerAnswer in ["3"]:
         difficulty_init("HARD", "3", 3, 1)
-    elif playerAnswer in ["2", 2]:
+    elif playerAnswer in ["2"]:
         difficulty_init("Normal", "2", 2, 2)
-    elif playerAnswer in ["1", 1]:
+    elif playerAnswer in ["1"]:
         difficulty_init("EASY", "1", 1, 3)
     print()
     return playerAnswer
