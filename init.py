@@ -141,7 +141,7 @@ def lower(text):
 def difficulty_selector():
     """This function prompts the user to select their difficulty and describe how difficulty affects gameplay."""
     global difficulty
-    playerAnswer = input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: ")
+    playerAnswer = str(input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: "))
     while playerAnswer not in ["1", "2", "3", 1, 2, 3]:
         playerAnswer = input("Please select your difficulty: (1) Easy, (2) Normal, (3) Hard: ")
     if playerAnswer.lower() in ["easy", "normal", "hard"]:
